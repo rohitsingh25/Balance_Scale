@@ -1,0 +1,10 @@
+{
+    "name": "balance-scale-root",
+    "version": "1.0.0",
+    "scripts": {
+        "frontend": "npm run dev --prefix frontend",
+        "frontend:install": "npm install --prefix frontend",
+        "setup": "pip install -r requirements.txt && npm run frontend:install",
+        "start": "echo 'Run python app.py in one terminal and npm run frontend in another'"
+    }
+}
