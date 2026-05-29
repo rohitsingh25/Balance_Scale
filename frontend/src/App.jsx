@@ -36,6 +36,7 @@ function App() {
     const [localTimeLeft, setLocalTimeLeft] = useState(15.0);
 
     const lastRoundRef = useRef(0);
+    const consecutiveErrorsRef = useRef(0);
 
     // ─── ROOM POLICING (EFFECTS) ──────────────────────
     // Poller to sync room state with backend
@@ -46,11 +47,19 @@ function App() {
         const fetchState = async () => {
             try {
                 const res = await fetch(`${API_URL}/room-state/${roomCode}?player_id=${playerId}`);
+                if (res.status === 404) {
+                    if (isMounted) {
+                        alert("The game room was dissolved.");
+                        handleLeave();
+                    }
+                    return;
+                }
                 if (!res.ok) {
-                    throw new Error("Room not found");
+                    throw new Error(`Server returned ${res.status}`);
                 }
                 const data = await res.json();
                 if (isMounted) {
+                    consecutiveErrorsRef.current = 0; // Reset error count on successful fetch
                     setGameState(data);
                     
                     // Reset selectedNumber and submitted locally when round changes
@@ -71,8 +80,13 @@ function App() {
             } catch (err) {
                 console.error("Polling error:", err);
                 if (isMounted) {
-                    alert("Room was dissolved or server connection lost.");
-                    handleLeave();
+                    consecutiveErrorsRef.current += 1;
+                    // Tolerate up to 5 consecutive failures (approx. 7.5 seconds) before kicking the player.
+                    // This handles server redeploys and temporary network glitches smoothly.
+                    if (consecutiveErrorsRef.current >= 5) {
+                        alert("Lost connection to the game server. Please try re-joining.");
+                        handleLeave();
+                    }
                 }
             }
         };
