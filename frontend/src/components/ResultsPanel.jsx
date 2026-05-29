@@ -5,94 +5,84 @@ const ResultsPanel = ({ results, onNext, gameOver, winner }) => {
 
     const { round, mean, sd, results: playerResults, eliminated_by_dupe } = results;
 
+    // Determine if it was a 1v1 duel (only 2 participants this round)
+    const participants = playerResults.filter(
+        p => !p.is_eliminated || p.elimination_round === round
+    );
+    const isDuel = participants.length === 2;
+
     return (
         <div className="results-overlay animate-fade-in">
             <div className="glass results-content">
-                <h2 style={{
-                    textAlign: 'center',
-                    marginBottom: '1.5rem',
-                    fontSize: '2.5rem',
-                    background: 'linear-gradient(135deg, #fff 0%, #8b5cf6 50%, #3b82f6 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-                    margin: '0 0 1.5rem 0',
-                    lineHeight: 1.1,
-                    letterSpacing: '-0.03em'
-                }}>
+                <h2
+                    className="gradient-text"
+                    style={{
+                        textAlign: 'center',
+                        fontSize: '2.2rem',
+                        margin: '0 0 1.5rem 0',
+                        lineHeight: 1.1,
+                        letterSpacing: '-0.03em',
+                        fontWeight: 800
+                    }}
+                >
                     {gameOver ? 'Game Over' : `Round ${round} Results`}
                 </h2>
 
                 <div className="results-scroll-area">
+                    {/* Winner banner */}
                     {gameOver && (
-                        <div style={{ textAlign: 'center', marginBottom: '1.5rem', padding: '0.8rem', background: winner === 'No One' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)', borderRadius: '0.5rem' }}>
-                            <h3 style={{ color: winner === 'No One' ? '#ef4444' : '#10b981', margin: 0 }}>
-                                {winner === 'No One' ? 'BINGO NO WINNER' : `Winner: ${winner}`}
+                        <div className={`winner-banner ${winner === 'No One' ? 'defeat' : 'victory'}`}>
+                            <h3 className="winner-name" style={{
+                                color: winner === 'No One' ? 'var(--danger)' : 'var(--success)'
+                            }}>
+                                {winner === 'No One' ? '💀 No Winner' : `🏆 Winner: ${winner}`}
                             </h3>
                         </div>
                     )}
 
-                    {(() => {
-                        // Logic to hide Stats if it was a 1v1 Duel
-                        // Participants = Survivors + Eliminated_This_Round
-                        const participants = playerResults.filter(p => !p.is_eliminated || p.elimination_round === round);
-                        const isDuel = participants.length === 2;
-
-                        if (isDuel) return null;
-
-                        return (
-                            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-                                <div style={{
-                                    flex: 1,
-                                    background: 'rgba(255,255,255,0.03)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: '0.75rem',
-                                    padding: '1rem',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: 'inset 0 0 20px rgba(0,0,0,0.2)'
-                                }}>
-                                    <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>Target (Mean)</div>
-                                    <div style={{ fontSize: '2rem', fontWeight: '800', color: '#fff', textShadow: '0 2px 10px rgba(255,255,255,0.1)' }}>{mean}</div>
-                                </div>
-
-                                <div style={{
-                                    flex: 1,
-                                    background: 'rgba(255,255,255,0.03)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: '0.75rem',
-                                    padding: '1rem',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: 'inset 0 0 20px rgba(0,0,0,0.2)'
-                                }}>
-                                    <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>Spread (SD)</div>
-                                    <div style={{ fontSize: '2rem', fontWeight: '800', color: '#c4b5fd', textShadow: '0 2px 10px rgba(139, 92, 246, 0.2)' }}>{sd}</div>
-                                </div>
+                    {/* Stats cards (hidden in 1v1 duel) */}
+                    {!isDuel && (
+                        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                            <div className="stat-card">
+                                <div className="stat-label">Target (Mean)</div>
+                                <div className="stat-value">{mean}</div>
                             </div>
-                        );
-                    })()}
-                    <div style={{ marginBottom: '1rem' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                            <div className="stat-card">
+                                <div className="stat-label">Spread (SD)</div>
+                                <div className="stat-value accent">{sd}</div>
+                            </div>
+                        </div>
+                    )}
+
+                    {isDuel && (
+                        <div style={{
+                            textAlign: 'center',
+                            padding: '0.8rem',
+                            marginBottom: '1rem',
+                            background: 'rgba(139, 92, 246, 0.06)',
+                            borderRadius: 'var(--radius-md)',
+                            border: '1px solid rgba(139, 92, 246, 0.15)',
+                            color: 'var(--accent-light)',
+                            fontSize: '0.85rem',
+                            fontWeight: 600
+                        }}>
+                            ⚔️ 1v1 Duel — Higher number wins (0 beats 100)
+                        </div>
+                    )}
+
+                    {/* Results table */}
+                    <div style={{ marginBottom: '0.5rem' }}>
+                        <table className="results-table">
                             <thead>
-                                <tr style={{ color: '#94a3b8', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <th style={{ padding: '0.5rem', textAlign: 'left' }}>Player</th>
-                                    <th style={{ padding: '0.5rem', textAlign: 'center' }}>Choice</th>
-                                    <th style={{ padding: '0.5rem', textAlign: 'center' }}>Dist (SD)</th>
-                                    <th style={{ padding: '0.5rem', textAlign: 'right' }}>Penalty</th>
+                                <tr>
+                                    <th style={{ textAlign: 'left' }}>Player</th>
+                                    <th style={{ textAlign: 'center' }}>Choice</th>
+                                    {!isDuel && <th style={{ textAlign: 'center' }}>Dist (SD)</th>}
+                                    <th style={{ textAlign: 'right' }}>Penalty</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {playerResults.map(p => {
-                                    // FILTER LOGIC:
-                                    // Show player IF:
-                                    // 1. Not eliminated
-                                    // 2. Eliminated THIS round (elimination_round == current round)
-
                                     const justEliminated = p.elimination_round === round;
                                     const longDead = p.is_eliminated && !justEliminated;
 
@@ -102,18 +92,42 @@ const ResultsPanel = ({ results, onNext, gameOver, winner }) => {
                                     const penaltyText = p.round_penalty === 0 ? 'Safe' : p.round_penalty;
 
                                     return (
-                                        <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                            <td style={{ padding: '0.5rem', color: p.id === 'human' ? '#8b5cf6' : 'inherit' }}>
-                                                {p.name} {p.is_eliminated && <span className="eliminated-tag">(Elim)</span>}
+                                        <tr key={p.id}>
+                                            <td style={{
+                                                textAlign: 'left',
+                                                color: p.id === 'human' ? 'var(--accent-light)' : 'inherit',
+                                                fontWeight: p.id === 'human' ? 600 : 400
+                                            }}>
+                                                {p.name}
+                                                {p.is_eliminated && (
+                                                    <span className="eliminated-tag" style={{ marginLeft: '0.4rem' }}>
+                                                        (Elim)
+                                                    </span>
+                                                )}
                                             </td>
-                                            <td style={{ padding: '0.5rem', textAlign: 'center' }}>
-                                                <span className="chosen-number">{p.current_choice ?? '-'}</span>
+                                            <td style={{ textAlign: 'center' }}>
+                                                <span className="chosen-number">
+                                                    {p.current_choice ?? '—'}
+                                                </span>
                                             </td>
-                                            <td style={{ padding: '0.5rem', textAlign: 'center' }}>
-                                                {isDupeElim ? '-' : `${p.round_distance.toFixed(1)} (${p.round_sd_units.toFixed(1)})`}
-                                            </td>
-                                            <td style={{ padding: '0.5rem', textAlign: 'right', color: penaltyText === 'Safe' ? '#10b981' : '#ef4444' }}>
-                                                {isDupeElim ? 'DUPLICATE' : penaltyText}
+                                            {!isDuel && (
+                                                <td style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                                                    {isDupeElim
+                                                        ? '—'
+                                                        : `${p.round_distance.toFixed(1)} (${p.round_sd_units.toFixed(1)})`
+                                                    }
+                                                </td>
+                                            )}
+                                            <td style={{
+                                                textAlign: 'right',
+                                                fontWeight: 700,
+                                                color: isDupeElim
+                                                    ? 'var(--danger)'
+                                                    : penaltyText === 'Safe'
+                                                        ? 'var(--success)'
+                                                        : 'var(--danger)'
+                                            }}>
+                                                {isDupeElim ? 'DUPE' : penaltyText}
                                             </td>
                                         </tr>
                                     );
@@ -123,20 +137,21 @@ const ResultsPanel = ({ results, onNext, gameOver, winner }) => {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    {gameOver && (
-                        <div style={{ textAlign: 'center' }}>
-                            <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>WINNER</span>
-                            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10b981' }}>{winner}</div>
-                        </div>
-                    )}
-
+                {/* Footer */}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                    paddingTop: '1rem',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.06)'
+                }}>
                     <button
+                        id="next-round-btn"
                         className="btn-primary"
                         onClick={onNext}
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', fontSize: '1rem', padding: '0.9rem' }}
                     >
-                        {gameOver ? 'Play Again' : 'Next Round'}
+                        {gameOver ? '🔄 Play Again' : 'Next Round →'}
                     </button>
                 </div>
             </div>

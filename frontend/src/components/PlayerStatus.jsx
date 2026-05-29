@@ -1,38 +1,67 @@
 import React from 'react';
-import '../index.css';
 
 const PlayerStatus = ({ players }) => {
-    // Sort: Active (score desc) -> Eliminated
+    // Sort: Active (score desc) → Eliminated (by round desc)
     const sortedPlayers = [...players].sort((a, b) => {
         if (a.is_eliminated && !b.is_eliminated) return 1;
         if (!a.is_eliminated && b.is_eliminated) return -1;
-        return b.points - a.points;
+        if (!a.is_eliminated && !b.is_eliminated) return b.points - a.points;
+        // Both eliminated — most recent first
+        return (b.elimination_round || 0) - (a.elimination_round || 0);
     });
 
-    return (
-        <div className="player-list glass" style={{ padding: '1rem' }}>
+    let rank = 0;
 
-            {sortedPlayers.map((p) => (
-                <div
-                    key={p.id}
-                    className={`player-card ${p.id === 'human' ? 'human' : ''} ${p.is_eliminated ? 'eliminated' : ''}`}
-                >
-                    <div className="player-info">
-                        <span className="player-name">{p.name} {p.id === 'human' ? '(You)' : ''}</span>
-                        {p.current_choice !== null && p.id === 'human' && !p.is_eliminated && (
-                            <span style={{ fontSize: '0.75rem', color: '#8b5cf6' }}>Selected: {p.current_choice}</span>
+    return (
+        <div className="player-list glass">
+            {sortedPlayers.map((p) => {
+                if (!p.is_eliminated) rank++;
+
+                const pointsClass = `points ${
+                    p.points <= 2 ? 'critical' : p.points <= 5 ? 'low' : ''
+                }`;
+
+                const rankClass = `rank-badge ${
+                    !p.is_eliminated && rank <= 3 ? `rank-${rank}` : ''
+                }`;
+
+                return (
+                    <div
+                        key={p.id}
+                        id={`player-${p.id}`}
+                        className={`player-card ${p.id === 'human' ? 'human' : ''} ${
+                            p.is_eliminated ? 'eliminated' : ''
+                        }`}
+                    >
+                        <div className={rankClass}>
+                            {p.is_eliminated ? '✕' : rank}
+                        </div>
+
+                        <div className="player-info" style={{ flex: 1 }}>
+                            <span className="player-name">
+                                {p.name}
+                                {p.id === 'human' && <span style={{ color: 'var(--accent-light)', marginLeft: '0.3rem' }}>(You)</span>}
+                            </span>
+                            {p.archetype && !p.is_eliminated && (
+                                <span className="archetype-tag">{p.archetype}</span>
+                            )}
+                            {p.current_choice !== null && p.id === 'human' && !p.is_eliminated && (
+                                <span style={{ fontSize: '0.7rem', color: 'var(--accent)', fontWeight: 600 }}>
+                                    Chose: {p.current_choice}
+                                </span>
+                            )}
+                        </div>
+
+                        {p.is_eliminated ? (
+                            <span className="player-status-tag">ELIMINATED</span>
+                        ) : (
+                            <div className={pointsClass}>
+                                {p.points}
+                            </div>
                         )}
                     </div>
-
-                    {p.is_eliminated ? (
-                        <span className="player-status-tag">ELIMINATED</span>
-                    ) : (
-                        <div className={`points ${p.points <= 3 ? 'critical' : p.points <= 6 ? 'low' : ''}`}>
-                            {p.points}
-                        </div>
-                    )}
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 };
