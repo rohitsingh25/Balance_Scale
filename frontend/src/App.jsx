@@ -3,6 +3,10 @@ import TileGrid from './components/TileGrid';
 import PlayerStatus from './components/PlayerStatus';
 import ResultsPanel from './components/ResultsPanel';
 
+// In production (Vercel), set VITE_API_URL to your Render backend URL
+// In development, leave empty to use Vite proxy
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 function App() {
     const [gameState, setGameState] = useState(null);
     const [selectedNumber, setSelectedNumber] = useState(null);
@@ -12,7 +16,7 @@ function App() {
 
     const startGame = async () => {
         try {
-            const res = await fetch('/start-game', {
+            const res = await fetch(`${API_URL}/start-game`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ bot_count: botCount })
@@ -42,7 +46,7 @@ function App() {
         const payload = isHumanEliminated ? {} : { number: number ?? selectedNumber };
 
         try {
-            const res = await fetch('/submit-turn', {
+            const res = await fetch(`${API_URL}/submit-turn`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -69,7 +73,7 @@ function App() {
         }
 
         try {
-            const res = await fetch('/game-state');
+            const res = await fetch(`${API_URL}/game-state`);
             const data = await res.json();
             setGameState(data);
             setRoundResults(null);

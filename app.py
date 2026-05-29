@@ -1,9 +1,22 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from game_logic import Game
 
 app = Flask(__name__)
-CORS(app)
+
+# CORS: Allow Vercel frontend + localhost for development
+allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+# Add Vercel production URL from environment variable
+vercel_url = os.environ.get("FRONTEND_URL")
+if vercel_url:
+    allowed_origins.append(vercel_url)
+
+CORS(app, origins=allowed_origins, supports_credentials=True)
 
 game = Game()
 
@@ -44,6 +57,11 @@ def submit_turn():
     # Run round 
     round_results = game.run_round()
     return jsonify(round_results)
+
+# Health check endpoint for Render
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "ok"})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
