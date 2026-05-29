@@ -5,7 +5,14 @@ import ResultsPanel from './components/ResultsPanel';
 
 // In production (Vercel), set VITE_API_URL to your Render backend URL
 // In development, leave empty to use Vite proxy
-const API_URL = import.meta.env.VITE_API_URL || '';
+const getApiUrl = () => {
+    let url = import.meta.env.VITE_API_URL || '';
+    if (url.endsWith('/')) {
+        url = url.slice(0, -1);
+    }
+    return url;
+};
+const API_URL = getApiUrl();
 
 function App() {
     const [gameState, setGameState] = useState(null);
@@ -21,6 +28,9 @@ function App() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ bot_count: botCount })
             });
+            if (!res.ok) {
+                throw new Error(`Server returned status ${res.status}`);
+            }
             const data = await res.json();
             setGameState(data);
             setGameStarted(true);
@@ -28,6 +38,7 @@ function App() {
             setSelectedNumber(null);
         } catch (err) {
             console.error('Failed to start game:', err);
+            alert(`Could not connect to game server.\n\nMake sure the backend is running and that your VITE_API_URL environment variable is set to the correct Render backend URL (without a trailing slash) in Vercel.\n\nAPI URL tried: ${API_URL || '(relative / local proxy)'}\nError details: ${err.message}`);
         }
     };
 
@@ -51,6 +62,9 @@ function App() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            if (!res.ok) {
+                throw new Error(`Server returned status ${res.status}`);
+            }
             const data = await res.json();
 
             if (data.error) {
@@ -61,6 +75,7 @@ function App() {
             setRoundResults(data);
         } catch (err) {
             console.error('Failed to submit turn:', err);
+            alert(`Failed to submit turn. Server connection lost: ${err.message}`);
         }
     };
 
@@ -74,12 +89,16 @@ function App() {
 
         try {
             const res = await fetch(`${API_URL}/game-state`);
+            if (!res.ok) {
+                throw new Error(`Server returned status ${res.status}`);
+            }
             const data = await res.json();
             setGameState(data);
             setRoundResults(null);
             setSelectedNumber(null);
         } catch (err) {
             console.error('Failed to fetch game state:', err);
+            alert(`Failed to proceed. Server connection lost: ${err.message}`);
         }
     };
 
@@ -120,25 +139,50 @@ function App() {
                             </ul>
                         </div>
 
-                        <div className="bot-count-control">
-                            <label className="bot-count-label" htmlFor="bot-count-input">
-                                Opponent Bots:
-                            </label>
-                            <input
-                                id="bot-count-input"
-                                type="number"
-                                min="1"
-                                max="10"
-                                value={botCount}
-                                onChange={(e) => {
-                                    let val = parseInt(e.target.value);
-                                    if (isNaN(val)) val = 1;
-                                    if (val < 1) val = 1;
-                                    if (val > 10) val = 10;
-                                    setBotCount(val);
-                                }}
-                                className="bot-count-input"
-                            />
+                        <div className="bot-selector-container">
+                            <span className="bot-count-label">Opponent Bots</span>
+                            <div className="bot-count-selector">
+                                <button
+                                    type="button"
+                                    className="bot-btn bot-btn-minus"
+                                    onClick={() => setBotCount(prev => Math.max(1, prev - 1))}
+                                    disabled={botCount <= 1}
+                                    aria-label="Decrease bot count"
+                                >
+                                    −
+                                </button>
+                                <span className="bot-count-display">{botCount}</span>
+                                <button
+                                    type="button"
+                                    className="bot-btn bot-btn-plus"
+                                    onClick={() => setBotCount(prev => Math.min(10, prev + 1))}
+                                    disabled={botCount >= 10}
+                                    aria-label="Increase bot count"
+                                >
+                                    +
+                                </button>
+                            </div>
+                            
+                            <div className="bot-preview-grid">
+                                {Array.from({ length: botCount }).map((_, i) => {
+                                    const botNames = [
+                                        "Alpha", "Bravo", "Charlie", "Delta", "Echo", 
+                                        "Foxtrot", "Golf", "Hotel", "India", "Juliet"
+                                    ];
+                                    const archetypes = ["Conservative", "Gambler", "Follower", "Contrarian", "Anxious", "Balanced"];
+                                    const name = botNames[i] || `Bot ${i + 1}`;
+                                    const arch = archetypes[i % archetypes.length];
+                                    return (
+                                        <div key={i} className={`bot-preview-card archetype-${arch.toLowerCase()}`}>
+                                            <span className="bot-preview-icon">🤖</span>
+                                            <div className="bot-preview-info">
+                                                <span className="bot-preview-name">{name}</span>
+                                                <span className="bot-preview-archetype">{arch}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         <button

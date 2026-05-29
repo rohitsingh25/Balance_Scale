@@ -5,25 +5,16 @@ from game_logic import Game
 
 app = Flask(__name__)
 
-# CORS: Allow Vercel frontend + localhost for development
-allowed_origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-
-# Add Vercel production URL from environment variable
-vercel_url = os.environ.get("FRONTEND_URL")
-if vercel_url:
-    allowed_origins.append(vercel_url)
-
-CORS(app, origins=allowed_origins, supports_credentials=True)
+# Enable CORS for all routes (public stateless API)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 game = Game()
 
 @app.route('/start-game', methods=['POST'])
 def start_game():
-    data = request.json
+    data = request.json or {}
     bot_count = data.get('bot_count', 5)
+    print(f"Starting game with bot_count: {bot_count}")
     if not isinstance(bot_count, int) or not (1 <= bot_count <= 10):
         bot_count = 5 
     game.start_game(bot_count=bot_count)
