@@ -47,7 +47,7 @@ def create_room():
     return jsonify({
         "room_code": room_code,
         "player_id": creator_id,
-        "room_state": game.get_state()
+        "room_state": game.get_state(viewer_id=creator_id)
     })
 
 @app.route('/join-room', methods=['POST'])
@@ -72,7 +72,7 @@ def join_room():
     print(f"Player {player_name} ({player_id}) joined room {room_code}")
     return jsonify({
         "player_id": player_id,
-        "room_state": game.get_state()
+        "room_state": game.get_state(viewer_id=player_id)
     })
 
 @app.route('/room-state/<room_code>', methods=['GET'])
@@ -89,7 +89,7 @@ def get_room_state(room_code):
     if player_id:
         game.last_activity = time.time()
         
-    return jsonify(game.get_state())
+    return jsonify(game.get_state(viewer_id=player_id))
 
 @app.route('/submit-choice', methods=['POST'])
 def submit_choice():
@@ -111,7 +111,7 @@ def submit_choice():
     if "error" in res:
         return jsonify(res), 400
         
-    return jsonify(game.get_state())
+    return jsonify(game.get_state(viewer_id=player_id))
 
 @app.route('/add-bot', methods=['POST'])
 def add_bot():
@@ -130,7 +130,7 @@ def add_bot():
     if "error" in res:
         return jsonify(res), 400
         
-    return jsonify(game.get_state())
+    return jsonify(game.get_state(viewer_id=player_id))
 
 @app.route('/remove-bot', methods=['POST'])
 def remove_bot():
@@ -150,7 +150,7 @@ def remove_bot():
     if "error" in res:
         return jsonify(res), 400
         
-    return jsonify(game.get_state())
+    return jsonify(game.get_state(viewer_id=player_id))
 
 @app.route('/start-game', methods=['POST'])
 def start_game():
@@ -169,7 +169,7 @@ def start_game():
     if "error" in res:
         return jsonify(res), 400
         
-    return jsonify(game.get_state())
+    return jsonify(game.get_state(viewer_id=player_id))
 
 @app.route('/next-round', methods=['POST'])
 def next_round():
@@ -188,7 +188,7 @@ def next_round():
     if "error" in res:
         return jsonify(res), 400
         
-    return jsonify(game.get_state())
+    return jsonify(game.get_state(viewer_id=player_id))
 
 @app.route('/leave-room', methods=['POST'])
 def leave_room():
