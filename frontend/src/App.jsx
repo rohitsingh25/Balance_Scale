@@ -433,10 +433,6 @@ function App() {
     if (lobbyStep === 'waiting_room') {
         return (
             <div className="lobby-container animate-fade-in">
-                <div className="active-rooms-badge">
-                    <span className="pulse-dot"></span>
-                    <span>{activeRooms} {activeRooms === 1 ? 'Active Room' : 'Active Rooms'}</span>
-                </div>
                 <div className="glass lobby-card lobby-card-wide">
                     <span className="scale-icon" role="img" aria-label="balance scale">⚖️</span>
                     <h1 className="gradient-text lobby-title" style={{ fontSize: '2.3rem' }}>Waiting Room</h1>
