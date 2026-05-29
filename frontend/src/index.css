@@ -1253,3 +1253,306 @@ button {
     padding: 2rem 1.5rem;
   }
 }
+
+/* ==============================
+   MULTIPLAYER UI STYLES
+   ============================== */
+.text-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  color: white;
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  width: 100%;
+  outline: none;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.text-input:focus {
+  border-color: var(--accent-light);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 16px rgba(167, 139, 250, 0.2);
+}
+
+.lobby-card-wide {
+  max-width: 680px !important;
+}
+
+.room-code-tag {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+.room-code-value {
+  color: var(--accent-light);
+  font-size: 1.3rem;
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 8px var(--accent-glow);
+  margin-left: 0.25rem;
+}
+
+.players-lobby-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+}
+
+.players-lobby-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.players-lobby-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.players-lobby-grid::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 4px;
+}
+
+.player-lobby-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.player-lobby-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-2px);
+}
+
+.player-lobby-card.self-card {
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.04);
+}
+
+.player-lobby-card.bot-card {
+  border-left: 3px solid var(--accent);
+}
+
+.player-lobby-avatar {
+  font-size: 1.4rem;
+}
+
+.player-lobby-detail {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.player-lobby-name {
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+.player-lobby-role {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.btn-remove-lobby-bot {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--danger);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-remove-lobby-bot:hover {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.timer-bar-container {
+  width: 100%;
+  height: 1.75rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.timer-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--blue));
+  width: 100%;
+  transition: width 100ms linear, background-color 250ms ease;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.timer-bar-fill.timer-warning {
+  background: linear-gradient(90deg, var(--danger), #f59e0b);
+  box-shadow: 0 0 12px var(--danger-glow);
+}
+
+.timer-bar-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.waiting-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  margin: 2rem 0;
+}
+
+.waiting-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.waiting-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.waiting-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(139, 92, 246, 0.15);
+  border-top: 3px solid var(--accent-light);
+  border-radius: 50%;
+  animation: waitingSpin 1s cubic-bezier(0.53, 0.21, 0.29, 0.83) infinite;
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+@keyframes waitingSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.divider-container {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.divider-container::before, .divider-container::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.divider-container:not(:empty)::before {
+  margin-right: .75em;
+}
+
+.divider-container:not(:empty)::after {
+  margin-left: .75em;
+}
+
+.lobby-back-link {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  display: inline-block;
+  margin-top: 1.5rem;
+}
+
+.lobby-back-link:hover {
+  color: var(--accent-light);
+}
+
+.highlight-text {
+  color: var(--accent-light);
+  font-weight: 800;
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.room-badge-small {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.waiting-lobby-header {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}

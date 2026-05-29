@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TileGrid = ({ selectedNumber, onSelect, disabled, revealedNumbers, onRestart }) => {
+const TileGrid = ({ selectedNumber, onSelect, disabled, revealedNumbers, onRestart, restartText = "Restart" }) => {
     const numbers = Array.from({ length: 101 }, (_, i) => i);
 
     return (
@@ -30,14 +30,14 @@ const TileGrid = ({ selectedNumber, onSelect, disabled, revealedNumbers, onResta
                     );
                 })}
 
-                {/* Restart tile spans the remaining columns */}
+                {/* Restart/Leave tile spans the remaining columns */}
                 <button
                     id="tile-restart"
                     className="tile restart-tile"
                     onClick={onRestart}
                 >
-                    <span style={{ fontSize: '1.1rem' }}>↺</span>
-                    Restart
+                    <span style={{ fontSize: '1.1rem' }}>🚪</span>
+                    {restartText}
                 </button>
             </div>
         </div>

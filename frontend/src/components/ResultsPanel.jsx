@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ResultsPanel = ({ results, onNext, gameOver, winner }) => {
+const ResultsPanel = ({ results, onNext, gameOver, winner, playerId, isCreator, onLeave }) => {
     if (!results) return null;
 
     const { round, mean, sd, results: playerResults, eliminated_by_dupe } = results;
@@ -90,29 +90,30 @@ const ResultsPanel = ({ results, onNext, gameOver, winner }) => {
 
                                     const isDupeElim = eliminated_by_dupe && eliminated_by_dupe.includes(p.id);
                                     const penaltyText = p.round_penalty === 0 ? 'Safe' : p.round_penalty;
+                                    const isMe = p.id === playerId;
 
                                     return (
                                         <tr key={p.id}>
                                             <td style={{
                                                 textAlign: 'left',
-                                                color: p.id === 'human' ? 'var(--accent-light)' : 'inherit',
-                                                fontWeight: p.id === 'human' ? 600 : 400
+                                                color: isMe ? 'var(--accent-light)' : 'inherit',
+                                                fontWeight: isMe ? 700 : 400
                                             }}>
-                                                {p.name}
+                                                {p.name} {isMe && '(You)'}
                                                 {p.is_eliminated && (
                                                     <span className="eliminated-tag" style={{ marginLeft: '0.4rem' }}>
-                                                        (Elim)
+                                                        {p.elimination_reason === 'Timeout' ? '⏱️ Timeout' : '(Elim)'}
                                                     </span>
                                                 )}
                                             </td>
                                             <td style={{ textAlign: 'center' }}>
                                                 <span className="chosen-number">
-                                                    {p.current_choice ?? '—'}
+                                                    {p.current_choice === -1 ? '⏱️' : p.current_choice === -2 ? '🚪' : p.current_choice ?? '—'}
                                                 </span>
                                             </td>
                                             {!isDuel && (
                                                 <td style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
-                                                    {isDupeElim
+                                                    {isDupeElim || p.current_choice < 0
                                                         ? '—'
                                                         : `${p.round_distance.toFixed(1)} (${p.round_sd_units.toFixed(1)})`
                                                     }
@@ -121,13 +122,13 @@ const ResultsPanel = ({ results, onNext, gameOver, winner }) => {
                                             <td style={{
                                                 textAlign: 'right',
                                                 fontWeight: 700,
-                                                color: isDupeElim
+                                                color: isDupeElim || p.current_choice < 0
                                                     ? 'var(--danger)'
                                                     : penaltyText === 'Safe'
                                                         ? 'var(--success)'
                                                         : 'var(--danger)'
                                             }}>
-                                                {isDupeElim ? 'DUPE' : penaltyText}
+                                                {isDupeElim ? 'DUPE' : p.current_choice === -1 ? 'TIMEOUT' : p.current_choice === -2 ? 'LEFT' : penaltyText}
                                             </td>
                                         </tr>
                                     );
@@ -145,14 +146,46 @@ const ResultsPanel = ({ results, onNext, gameOver, winner }) => {
                     paddingTop: '1rem',
                     borderTop: '1px solid rgba(255, 255, 255, 0.06)'
                 }}>
-                    <button
-                        id="next-round-btn"
-                        className="btn-primary"
-                        onClick={onNext}
-                        style={{ width: '100%', fontSize: '1rem', padding: '0.9rem' }}
-                    >
-                        {gameOver ? '🔄 Play Again' : 'Next Round →'}
-                    </button>
+                    {isCreator ? (
+                        <>
+                            {!gameOver ? (
+                                <button
+                                    id="next-round-btn"
+                                    className="btn-primary"
+                                    onClick={onNext}
+                                    style={{ width: '100%', fontSize: '1rem', padding: '0.9rem' }}
+                                >
+                                    Next Round →
+                                </button>
+                            ) : (
+                                <button
+                                    id="leave-game-btn"
+                                    className="btn-primary"
+                                    onClick={onLeave}
+                                    style={{ width: '100%', fontSize: '1rem', padding: '0.9rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)' }}
+                                >
+                                    🚪 Return to Lobby
+                                </button>
+                            )}
+                        </>
+                    ) : (
+                        <div style={{ textAlign: 'center', width: '100%' }}>
+                            {!gameOver ? (
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic', margin: '0.5rem 0' }}>
+                                    ⏳ Waiting for room creator to start next round...
+                                </p>
+                            ) : (
+                                <button
+                                    id="leave-game-btn"
+                                    className="btn-primary"
+                                    onClick={onLeave}
+                                    style={{ width: '100%', fontSize: '1rem', padding: '0.9rem' }}
+                                >
+                                    🚪 Leave Room
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
