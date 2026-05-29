@@ -523,10 +523,6 @@ function App() {
 
     return (
         <div className="main-layout animate-fade-in">
-            <div className="active-rooms-badge">
-                <span className="pulse-dot"></span>
-                <span>{activeRooms} {activeRooms === 1 ? 'Active Room' : 'Active Rooms'}</span>
-            </div>
             {/* ─── LEFT: GAME AREA ─── */}
             <div className="game-area">
                 <div className="game-header">
