@@ -94,15 +94,17 @@ const ResultsPanel = ({ results, onNext, gameOver, winner, playerId, isCreator, 
 
                                     return (
                                         <tr key={p.id}>
-                                            <td style={{
-                                                textAlign: 'left',
+                                            <td className="results-player-cell" style={{
                                                 color: isMe ? 'var(--accent-light)' : 'inherit',
                                                 fontWeight: isMe ? 700 : 400
                                             }}>
-                                                {p.name} {isMe && '(You)'}
+                                                <span className="results-player-name" title={p.name}>
+                                                    {p.name}
+                                                </span>
+                                                {isMe && <span className="results-you-tag"> (You)</span>}
                                                 {p.is_eliminated && (
                                                     <span className="eliminated-tag" style={{ marginLeft: '0.4rem' }}>
-                                                        {p.elimination_reason === 'Timeout' ? '⏱️ Timeout' : '(Elim)'}
+                                                        {p.elimination_reason === 'Timeout' ? '⏱️' : '💀'}
                                                     </span>
                                                 )}
                                             </td>

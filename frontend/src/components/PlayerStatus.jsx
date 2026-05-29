@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PlayerStatus = ({ players }) => {
+const PlayerStatus = ({ players, playerId }) => {
     // Sort: Active (score desc) → Eliminated (by round desc)
     const sortedPlayers = [...players].sort((a, b) => {
         if (a.is_eliminated && !b.is_eliminated) return 1;
@@ -25,11 +25,13 @@ const PlayerStatus = ({ players }) => {
                     !p.is_eliminated && rank <= 3 ? `rank-${rank}` : ''
                 }`;
 
+                const isSelf = p.id === playerId;
+
                 return (
                     <div
                         key={p.id}
                         id={`player-${p.id}`}
-                        className={`player-card ${p.id === 'human' ? 'human' : ''} ${
+                        className={`player-card ${isSelf ? 'human' : ''} ${
                             p.is_eliminated ? 'eliminated' : ''
                         }`}
                     >
@@ -37,15 +39,21 @@ const PlayerStatus = ({ players }) => {
                             {p.is_eliminated ? '✕' : rank}
                         </div>
 
-                        <div className="player-info" style={{ flex: 1 }}>
-                            <span className="player-name">
-                                {p.name}
-                                {p.id === 'human' && <span style={{ color: 'var(--accent-light)', marginLeft: '0.3rem' }}>(You)</span>}
-                            </span>
+                        <div className="player-info" style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', overflow: 'hidden' }}>
+                                <span className="player-name" title={p.name} style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '0 1 auto' }}>
+                                    {p.name}
+                                </span>
+                                {isSelf && (
+                                    <span style={{ color: 'var(--accent-light)', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
+                                        (You)
+                                    </span>
+                                )}
+                            </div>
                             {p.archetype && !p.is_eliminated && (
                                 <span className="archetype-tag">{p.archetype}</span>
                             )}
-                            {p.current_choice !== null && p.id === 'human' && !p.is_eliminated && (
+                            {p.current_choice !== null && isSelf && !p.is_eliminated && (
                                 <span style={{ fontSize: '0.7rem', color: 'var(--accent)', fontWeight: 600 }}>
                                     Chose: {p.current_choice}
                                 </span>

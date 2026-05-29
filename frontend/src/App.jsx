@@ -587,6 +587,7 @@ function App() {
                     </div>
                 </div>
                 <PlayerStatus 
+                    playerId={playerId}
                     players={playersToShow.map(p => {
                         // Check if player submitted in the current round
                         const activePlayer = gameState?.players.find(ap => ap.id === p.id);
