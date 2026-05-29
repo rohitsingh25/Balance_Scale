@@ -277,11 +277,9 @@ button {
   grid-template-columns: repeat(15, minmax(2.2rem, 1fr));
   gap: 0.3rem;
   width: 100%;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
   align-content: center;
   padding: 0.25rem;
+  overflow: visible;
 }
 
 .tile {
@@ -1679,4 +1677,51 @@ button {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-main);
+}
+
+.active-rooms-badge {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.45rem 0.9rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-pill);
+  color: var(--success);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
+  transition: all var(--transition-fast);
+}
+
+.active-rooms-badge .pulse-dot {
+  width: 7px;
+  height: 7px;
+  background-color: var(--success);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--success);
+  animation: badgePulse 2.2s infinite;
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@media (max-width: 480px) {
+  .active-rooms-badge {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.65rem;
+  }
 }

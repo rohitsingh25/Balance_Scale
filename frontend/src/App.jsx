@@ -19,6 +19,7 @@ function App() {
     const [playerName, setPlayerName] = useState(() => sessionStorage.getItem('bs_player_name') || '');
     const [roomCode, setRoomCode] = useState(() => sessionStorage.getItem('bs_room_code') || '');
     const [playerId, setPlayerId] = useState(() => sessionStorage.getItem('bs_player_id') || '');
+    const [activeRooms, setActiveRooms] = useState(0);
     const [lobbyStep, setLobbyStep] = useState(() => {
         const hasRoom = sessionStorage.getItem('bs_room_code');
         const hasId = sessionStorage.getItem('bs_player_id');
@@ -116,6 +117,26 @@ function App() {
             setLocalTimeLeft(gameState.time_left);
         }
     }, [gameState?.time_left]);
+
+    // Poll the active rooms count from the backend every 5 seconds
+    useEffect(() => {
+        const fetchRooms = async () => {
+            try {
+                const res = await fetch(`${API_URL}/active-rooms`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && typeof data.rooms_active === 'number') {
+                        setActiveRooms(data.rooms_active);
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching active rooms:", err);
+            }
+        };
+        fetchRooms();
+        const interval = setInterval(fetchRooms, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     // ─── ACTION IMPLEMENTATIONS ──────────────────────
     const createRoom = async () => {
@@ -303,6 +324,10 @@ function App() {
     if (lobbyStep === 'name') {
         return (
             <div className="lobby-container animate-fade-in">
+                <div className="active-rooms-badge">
+                    <span className="pulse-dot"></span>
+                    <span>{activeRooms} {activeRooms === 1 ? 'Active Room' : 'Active Rooms'}</span>
+                </div>
                 <div className="glass lobby-card">
                     <span className="scale-icon" role="img" aria-label="balance scale">⚖️</span>
                     <h1 className="gradient-text lobby-title">Balance Scale</h1>
@@ -346,6 +371,10 @@ function App() {
     if (lobbyStep === 'room_selection') {
         return (
             <div className="lobby-container animate-fade-in">
+                <div className="active-rooms-badge">
+                    <span className="pulse-dot"></span>
+                    <span>{activeRooms} {activeRooms === 1 ? 'Active Room' : 'Active Rooms'}</span>
+                </div>
                 <div className="glass lobby-card">
                     <span className="scale-icon" role="img" aria-label="balance scale">⚖️</span>
                     <h1 className="gradient-text lobby-title">Balance Scale</h1>
@@ -404,6 +433,10 @@ function App() {
     if (lobbyStep === 'waiting_room') {
         return (
             <div className="lobby-container animate-fade-in">
+                <div className="active-rooms-badge">
+                    <span className="pulse-dot"></span>
+                    <span>{activeRooms} {activeRooms === 1 ? 'Active Room' : 'Active Rooms'}</span>
+                </div>
                 <div className="glass lobby-card lobby-card-wide">
                     <span className="scale-icon" role="img" aria-label="balance scale">⚖️</span>
                     <h1 className="gradient-text lobby-title" style={{ fontSize: '2.3rem' }}>Waiting Room</h1>
@@ -490,6 +523,10 @@ function App() {
 
     return (
         <div className="main-layout animate-fade-in">
+            <div className="active-rooms-badge">
+                <span className="pulse-dot"></span>
+                <span>{activeRooms} {activeRooms === 1 ? 'Active Room' : 'Active Rooms'}</span>
+            </div>
             {/* ─── LEFT: GAME AREA ─── */}
             <div className="game-area">
                 <div className="game-header">

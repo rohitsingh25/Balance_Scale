@@ -217,5 +217,9 @@ def leave_room():
 def health():
     return jsonify({"status": "ok", "rooms_active": len(games)})
 
+@app.route('/active-rooms', methods=['GET'])
+def active_rooms():
+    return jsonify({"rooms_active": len(games)})
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
